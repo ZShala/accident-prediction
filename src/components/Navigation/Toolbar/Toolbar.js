@@ -12,7 +12,7 @@ const toolbar = (props) => (
             <Logo />
         </div>
         <nav className={classes.DesktopOnly}>
-            <NavigationItems />
+            <NavigationItems addAccidentClicked={props.addModalClicked} downloadMapClicked={props.downloadModalClicked}/>
         </nav>
     </header>
 );
