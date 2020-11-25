@@ -5,6 +5,7 @@ import classes from './Layout.module.css';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
 import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
 import Modal from '../UI/Modal/Modal';
+import DownloadModalContent from '../ModalContent/DownloadModalContent/DownloadModalContent';
 
 class Layout extends Component {
     state = {
@@ -43,6 +44,7 @@ class Layout extends Component {
                     closed={this.sideDrawerClosedHandler} />
                 <main className={classes.Content}>
                 <Modal show={this.state.showDownloadModal} modalClosed={this.modalClosedHandler}>
+                    <DownloadModalContent closed={this.modalClosedHandler}/>
                 </Modal>
                 <Modal show={this.state.showAddModal} modalClosed={this.modalClosedHandler}>
                 </Modal>
