@@ -1,27 +1,28 @@
-.Modal{
-  position: relative;
-  padding: 100px;
-  text-align: center;
+.Modal {
+    position: relative;
+    padding: 100px;
+    text-align: center;
 }
 
-.Content{
+.Content {
     color: black;
     font-size: 1.25em;
     position: absolute;
-    top:50%;
-    left:50%;
-    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: Helvetica, sans-serif;
 }
+
 @media only screen and (max-width: 600px) {
-    .Content{
+    .Content {
         font-size: 0.75em;
     }
-  }
+}
 
-.Cancel{
+.Cancel {
     width: 3%;
     position: absolute;
-    top:10px;
-    right:10px;
+    top: 10px;
+    right: 10px;
 }
