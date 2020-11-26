@@ -50,6 +50,7 @@ class Layout extends Component {
                     <Modal show={this.state.showAddModal} modalClosed={this.modalClosedHandler}>
                         <AddModalContent closed={this.modalClosedHandler} />
                     </Modal>
+                    {this.props.children}
                 </main>
             </Auxiliary>
         )
