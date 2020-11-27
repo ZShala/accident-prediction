@@ -40,7 +40,7 @@ class ModalContent extends React.Component {
             required
           />
             <FormInput
-            name='data'
+            name='date'
             type='date'
             value={this.state.date}
             handleChange={this.handleChange}
