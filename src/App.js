@@ -22,7 +22,8 @@ class App extends Component {
       container: this.mapRef.current,
       style: 'mapbox://styles/mapbox/light-v10',
       center: [21, 42.6],
-      zoom: 8
+      zoom: 8,
+      minZoom: 7
     })
   }
 
@@ -32,7 +33,7 @@ class App extends Component {
     return (
       <Layout>
         <Switch>
-          <Route path="/" exact render={() => (<div style={{ width: "100%", height: "100vh", position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }} ref={this.mapRef}>
+          <Route path="/" exact render={() => (<div style={{ width: "100%", height: "100vh", position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }} ref={this.mapRef} >
             <Footer clicked={() => (this.props.history.push('/mapsPage'))} arrow='&#8964;'> SHIKO HARTAT TJERA </Footer>
           </div>)}
           />
