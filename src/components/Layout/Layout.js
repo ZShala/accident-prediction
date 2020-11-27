@@ -7,6 +7,7 @@ import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
 import Modal from '../UI/Modal/Modal';
 import DownloadModalContent from '../ModalContent/DownloadModalContent/DownloadModalContent';
 import AddModalContent from '../ModalContent/AddModalContent/AddModalContent';
+import Footer from '../Footer/Footer';
 
 class Layout extends Component {
     state = {
@@ -52,6 +53,7 @@ class Layout extends Component {
                     </Modal>
                     {this.props.children}
                 </main>
+                <Footer />
             </Auxiliary>
         )
     }
