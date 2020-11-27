@@ -6,7 +6,7 @@ import Footer from '../Footer/Footer';
 const Maps = (props) => (
     <div> 
         <h1> TE DUA 🥰😍😘 </h1>
-        <Footer clicked={() => (props.history.goBack())} arrow='&#8963;'/>
+        <Footer clicked={() => (props.history.goBack(window.location.reload(false)))} arrow='&#8963;'/>
     </div>
 )
 
