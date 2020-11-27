@@ -2,11 +2,12 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import classes from './Maps.module.css';
 import Footer from '../Footer/Footer';
+import KosovoMap from '../../assets/images/kosovo-map.jpg';
 
 const Maps = (props) => (
     <div> 
-        <h1> TE DUA 🥰😍😘 </h1>
-        <Footer clicked={() => (props.history.goBack(window.location.reload(false)))} arrow='&#8963;'/>
+        <img src={KosovoMap} className={classes.Maps}/>
+        <Footer clicked={() => (props.history.goBack()) } arrow='&#8963;'/>
     </div>
 )
 
