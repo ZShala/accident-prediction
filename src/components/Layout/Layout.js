@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { withRouter } from "react-router-dom";
 import Auxiliary from '../../hoc/Auxiliary';
 import classes from './Layout.module.css';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
@@ -7,7 +7,6 @@ import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
 import Modal from '../UI/Modal/Modal';
 import DownloadModalContent from '../ModalContent/DownloadModalContent/DownloadModalContent';
 import AddModalContent from '../ModalContent/AddModalContent/AddModalContent';
-import Footer from '../Footer/Footer';
 
 class Layout extends Component {
     state = {
@@ -53,10 +52,10 @@ class Layout extends Component {
                     </Modal>
                     {this.props.children}
                 </main>
-                <Footer />
+           
             </Auxiliary>
         )
     }
 }
 
-export default Layout;
+export default withRouter(Layout);

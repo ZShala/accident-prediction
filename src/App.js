@@ -3,6 +3,9 @@ import { Route, Switch } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import './App.css';
 import * as mapboxgl from 'mapbox-gl';
+import Maps from '../src/components/Maps/Maps';
+import Footer from '../src/components/Footer/Footer';
+import { withRouter } from "react-router-dom";
 
 
 class App extends Component {
@@ -22,18 +25,23 @@ class App extends Component {
       zoom: 8
     })
   }
-  
+
 
   render() {
 
     return (
       <Layout>
         <Switch>
-          <Route path="/" exact render={() => (<div style={{ width: "100%", height: "100vh", position: "absolute", left: "0", right: "0", top: "0", bottom: "0"}} ref={this.mapRef}></div>)}  />
+          <Route path="/" exact render={() => (<div style={{ width: "100%", height: "100vh", position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }} ref={this.mapRef}>
+            <Footer clicked={() => (this.props.history.push('/mapsPage'))} arrow='&#8964;'> SHIKO HARTAT TJERA </Footer>
+          </div>)}
+          />
+
+          <Route path="/mapsPage" component={Maps} />
         </Switch>
       </Layout>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

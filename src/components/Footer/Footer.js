@@ -1,10 +1,9 @@
 import React from 'react';
 import classes from './Footer.module.css';
 
-const Footer = () => (
-    <div className={classes.Footer}>
-         <p> SHIKO HARTAT TJERA <br/> <span>&#8964;</span>  </p>
-         
+const Footer = (props) => (
+    <div className={classes.Footer} onClick={props.clicked}>
+         <p>{props.children}<br/> <span>{props.arrow}</span>  </p>
     </div>
 );
 
