@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './AddModalContent.module.css';
 import CloseBtn from '../../../assets/images/cancel.png';
 import FormInput from '../../Form-Input/Form-Input';
 import Button from '../../UI/Button/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Content-Type': 'application/json',
+}
 
 const options = {
   enableHighAccuracy: true,
@@ -27,14 +32,21 @@ const useStyles = makeStyles((theme) => ({
 const ModalContent = (props) => {
   const materialClasses = useStyles();
   const [attr, setAttr] = useState({
-    name: '',
-    location: '',
-    date: '',
-    currentData: null,
-    coordinates: {
-      lon: '',
-      lat: ''
-    }
+    description: '',
+    humidity: '', 
+    pressure: '', 
+    temp: '', 
+    visibility: '',
+    wind_speed: '',
+    weather: '',
+    location: null,
+    datetime: '',
+    severity: '',
+    vehicles_involved: '', 
+    people_involved: '', 
+    casualties: '',
+    road_category: '', 
+    speed_limit: ''
   })
 
   const handleChange = event => {
@@ -43,9 +55,12 @@ const ModalContent = (props) => {
     if(name === 'lon' || name === 'lat') {
       setAttr({
         ...attr,
-        coordinates: {
-          ...attr.coordinates,
-          [name]: value
+        location: {
+          ...attr.location,
+          coordinates: {
+            ...attr.location.coordinates,
+            [name]: value
+          }
         }
       })
       return;
@@ -55,6 +70,31 @@ const ModalContent = (props) => {
       [name]: value 
     });
   };
+
+  const saveAccidentRequest = async () => {
+    console.log('!attr.datetime', !attr.datetime)
+    console.log('!attr.location.coordinates', !attr.location.coordinates)
+    if(!attr.datetime || !attr.location.coordinates) {
+      alert('Ju lutem plotesoni kohen dhe koordinatat')
+    }
+    const url = 'http://localhost:5000/api/accident/addAccident';
+    const body = {
+      ...attr,
+      location: {
+        type: 'Point',
+        coordinates: [
+          attr.location.coordinates.lon,
+          attr.location.coordinates.lat
+        ]
+      }
+    };
+    console.log('body', body)
+    const response = await fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers,
+      body: JSON.stringify(body)
+    });
+  }
 
   const handleCoordinates = () => {
     if ("geolocation" in navigator) {
@@ -66,16 +106,16 @@ const ModalContent = (props) => {
   }
   
   const successMeasure = (position) => {
-    console.log('Position is: :', position)
-    console.log("Latitude is :", position.coords.latitude);
-    console.log("Longitude is :", position.coords.longitude);
     let longitude = position.coords.longitude;
     let latitude = position.coords.latitude;
     setAttr({
       ...attr,
-      coordinates: {
-        lon: longitude,
-        lat: latitude
+      location: {
+        ...attr.location,
+        coordinates: {
+          lon: longitude,
+          lat: latitude
+        }
       }
     })
   } 
@@ -85,62 +125,101 @@ const ModalContent = (props) => {
   }
 
   const handleDatePicker = async (event) => {
-    console.log('event.target.value', event.target.value)
-    console.log('Date.parse(event.target.value)', Date.parse(event.target.value))
-    const unixTimestamp = Date.parse(event.target.value);
-    const url = `https://cors-anywhere.herokuapp.com/https://api.openweathermap.org/data/2.5/onecall?lat=${attr.coordinates.lat}&lon=${attr.coordinates.lon}&exclude=minutely,hourly,daily&dt=${unixTimestamp}&units=metric&appid=9a8c672317155355f1cfd7ff75a930ea`;
+    if(!attr.location.coordinates.lon || !attr.location.coordinates.lat) {
+      alert('Generate coordinates')
+    };
+    setAttr({
+      ...attr,
+      datetime: event.target.value
+    })
+    openWeatherMap(event.target.value);
+  }
+
+  const openWeatherMap = async (date) => {
+    const unixTimestamp = Date.parse(date);
+    const url = `https://cors-anywhere.herokuapp.com/https://api.openweathermap.org/data/2.5/onecall?lat=${attr.location.coordinates.lat}&lon=${attr.location.coordinates.lon}&exclude=minutely,hourly,daily&dt=${unixTimestamp}&units=metric&appid=9a8c672317155355f1cfd7ff75a930ea`;
     const response = await fetch(url, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      }
-    })
+      headers
+    });
     const data = await response.json();
-    const weather = '';
-    data.currentData.weather.forEach((el, i) => {
+    let weather = '';
+    data.current && data.current.weather.forEach((el, i) => {
       if(i > 1)
        weather += `, ${el.main}`
       else weather += `${el.main}`
     })
+
+    const {humidity, pressure, temp, visibility, wind_speed} = data.current;
+
     setAttr({
       ...attr,
-      currentData: data.current,
-      weather: weather
+      humidity, 
+      pressure, 
+      temp, 
+      visibility, 
+      wind_speed,
+      weather
     });
   }
+
   return (
       <div className={classes.Modal}>
         <img className={classes.Cancel} src={CloseBtn} alt='Cancel' onClick={props.closed} />
         <FormInput 
-          name='name'
+          name='description'
           type='text'
-          value={attr.name}
+          value={attr.description}
           handleChange={handleChange}
-          label='Emri i raportuesit'
-          required
+          label='Pershkrimi i aksidentit'
         />
         <FormInput
-          name='location'
-          type='text'
-          value={attr.location}
+          name='severity'
+          type='number'
+          value={attr.severity}
           handleChange={handleChange}
-          label='Lokacioni i aksidentit'
-          required
+          label='Rrezikshmëri'
         />
         <FormInput
-          name='date'
-          type='date'
-          value={attr.date}
+          name='vehicles_involved'
+          type='number'
+          value={attr.vehicles_involved}
           handleChange={handleChange}
-          label='Data e aksidentit'
-          required
+          label='Vetura të përfshira'
         />
-        <button onClick={() => handleCoordinates()}>Gjenero Koordinatat</button>
+        <FormInput
+          name='people_involved'
+          type='number'
+          value={attr.people_involved}
+          handleChange={handleChange}
+          label='Përsona të përfshirë'
+        />
+        <FormInput
+          name='casualties'
+          type='number'
+          value={attr.casualties}
+          handleChange={handleChange}
+          label='Fatalitet'
+        />
+        <FormInput
+          name='road_category'
+          type='text'
+          value={attr.road_category}
+          handleChange={handleChange}
+          label='Kategoria e rrugës'
+        />
+        <FormInput
+          name='speed_limit'
+          type='number'
+          value={attr.speed_limit}
+          handleChange={handleChange}
+          label='Shpejtësia e lejuar'
+        />
+        <button onClick={handleCoordinates}>Gjenero Koordinatat</button>
         <FormInput
           name='lon'
           type='number'
-          value={attr.coordinates.lon}
+          value={attr.location ? attr.location.coordinates.lon : ''}
           handleChange={handleChange}
           label='Longitute'
           required
@@ -148,7 +227,7 @@ const ModalContent = (props) => {
         <FormInput
           name='lat'
           type='number'
-          value={attr.coordinates.lat}
+          value={attr.location ? attr.location.coordinates.lat : ''}
           handleChange={handleChange}
           label='Latitude'
           required
@@ -157,36 +236,49 @@ const ModalContent = (props) => {
           id="datetime-local"
           label="Next appointment"
           type="datetime-local"
-          defaultValue="2017-05-24T10:30"
+          defaultValue={new Date().toISOString()}
           className={materialClasses.textField}
           InputLabelProps={{
             shrink: true,
           }}
           onBlur={handleDatePicker}
         />
-        {console.log('attr', attr)}
         <FormInput
           name='humidity'
           type='number'
-          value={attr.currentData ? attr.currentData.humidity : ''}
+          value={attr.humidity}
           handleChange={handleChange}
-          label='Humidity'
+          label='Lagështia e ajrit'
         />
         <FormInput
           name='temperature'
           type='number'
-          value={attr.currentData ? attr.currentData.temp : ''}
+          value={attr.temp}
           handleChange={handleChange}
-          label='Temperature (Celsius)'
+          label='Temperatura (Celsius)'
         />
         <FormInput
-          name='temperature'
-          type='number'
+          name='weather'
+          type='text'
           value={attr.weather}
           handleChange={handleChange}
-          label='Temperature (Celsius)'
+          label='Moti'
         />
-        <Button btnType='Success'>Shto Aksidentin</Button>
+        <FormInput
+          name='visibility'
+          type='number'
+          value={attr.visibility}
+          handleChange={handleChange}
+          label='Dukshmëria'
+        />
+        <FormInput
+          name='wind_speed'
+          type='number'
+          value={attr.wind_speed}
+          handleChange={handleChange}
+          label='Shpejtësia e erës'
+        />
+        <Button btnType='Success' clicked={saveAccidentRequest}>Shto Aksidentin</Button>
       </div>
   )
 }
