@@ -35,12 +35,12 @@ const ModalContent = (props) => {
     description: '',
     humidity: '', 
     pressure: '', 
-    temp: '', 
+    temp: '',
     visibility: '',
     wind_speed: '',
     weather: '',
     location: null,
-    datetime: '',
+    datetime: new Date().toISOString(),
     severity: '',
     vehicles_involved: '', 
     people_involved: '', 
@@ -58,7 +58,8 @@ const ModalContent = (props) => {
         location: {
           ...attr.location,
           coordinates: {
-            ...attr.location.coordinates,
+            lon: attr.location ? attr.location.coordinates.lon : '',
+            lat: attr.location ? attr.location.coordinates.lat : '',
             [name]: value
           }
         }
@@ -72,8 +73,6 @@ const ModalContent = (props) => {
   };
 
   const saveAccidentRequest = async () => {
-    console.log('!attr.datetime', !attr.datetime)
-    console.log('!attr.location.coordinates', !attr.location.coordinates)
     if(!attr.datetime || !attr.location.coordinates) {
       alert('Ju lutem plotesoni kohen dhe koordinatat')
     }
@@ -88,7 +87,6 @@ const ModalContent = (props) => {
         ]
       }
     };
-    console.log('body', body)
     const response = await fetch(url, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers,
