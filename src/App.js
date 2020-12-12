@@ -1,48 +1,61 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
+// import useSwr from "swr";
 import { Route, Switch } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
+import keplerGlReducer from "kepler.gl/reducers";
+import { createStore, combineReducers, applyMiddleware } from "redux";
+import { taskMiddleware } from 'react-palm/tasks';
+import { Provider, useDispatch } from "react-redux";
+import { addDataToMap } from "kepler.gl/actions";
+import KeplerGl from "kepler.gl";
+import KeplerGlMap from "./components/KeplerGlMap/Map"
+
 import Layout from './components/Layout/Layout';
 import './App.css';
 import * as mapboxgl from 'mapbox-gl';
 import Maps from '../src/components/Maps/Maps';
-import Footer from '../src/components/Footer/Footer';
-import { withRouter } from "react-router-dom";
+import NewComponent from './pages/NewComponent';
+import MainMap from './pages/MainMap';
 
+const customizedKeplerGlReducer = keplerGlReducer
+  .initialState({
+    uiState: {
+      // hide side panel to disallow user customize the map
+      readOnly: true,
 
-class App extends Component {
-  constructor() {
-    super()
-    this.mapRef = React.createRef()
-  }
+      // customize which map control button to show
+      // mapControls: {
+      //   visibleLayers: {
+      //     show: false
+      //   },
+        // mapLegend: {
+        //   show: true,
+        //   active: true
+        // },
+        // splitMap: {
+        //   show: false
+        // }
+      // }
+    }
+  });
 
-  componentDidMount() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiemFuYXNoYWxhIiwiYSI6ImNraHplc3V3dTBlbjAzMG10OGZ1YXZldncifQ.KyOo6uy1Cu6Hfs6qZimxXg';
+const reducers = combineReducers({
+  keplerGl: customizedKeplerGlReducer
+});
 
-    // create mapbox object
-    new mapboxgl.Map({
-      container: this.mapRef.current,
-      style: 'mapbox://styles/mapbox/light-v10',
-      center: [21, 42.6],
-      zoom: 8,
-      minZoom: 7
-    })
-  }
+const store = createStore(reducers, {}, applyMiddleware(taskMiddleware));
 
-
-  render() {
-
+const App = () => {
     return (
-      <Layout>
-        <Switch>
-          <Route path="/" exact render={() => (<div style={{ width: "100%", height: "100vh", position: "absolute", left: "0", right: "0", top: "0", bottom: "0" }} ref={this.mapRef} >
-            <Footer clicked={() => (this.props.history.push('/mapsPage'))} arrow='&#8964;'> SHIKO HARTAT TJERA </Footer>
-          </div>)}
-          />
-
-          <Route path="/mapsPage" component={Maps} />
-        </Switch>
-      </Layout>
+      <Provider store={store}>
+        <Layout>
+          <Switch>
+            <Route path="/" exact component={KeplerGlMap} />
+            <Route path="/mapsPage" component={Maps} />
+          </Switch>
+        </Layout>
+      </Provider>
     );
-  }
 }
 
 export default withRouter(App);
